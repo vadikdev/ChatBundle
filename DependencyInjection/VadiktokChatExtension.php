@@ -24,5 +24,8 @@ class VadiktokChatExtension extends Extension
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
+
+        $chatServiceDefintion = $container->getDefinition('vadiktok_chat.chat');
+        $chatServiceDefintion->addMethodCall('setPort', array($config['socket_server_port']));
     }
 }

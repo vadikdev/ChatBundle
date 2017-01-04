@@ -20,9 +20,6 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('vadiktok_chat');
         $rootNode->children()
-            ->scalarNode('socket_server_host')
-                ->defaultValue('127.0.0.1')
-            ->end()
             ->scalarNode('socket_server_port')
                 ->defaultValue('3000')
             ->end()
