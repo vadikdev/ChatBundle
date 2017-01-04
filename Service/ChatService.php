@@ -8,16 +8,21 @@
 
 namespace Vadiktok\ChatBundle\Service;
 
-
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManager;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Vadiktok\ChatBundle\Event\MessageEvent;
 
 class ChatService implements MessageComponentInterface {
 
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var EntityManager
      */
     protected $em;
+
+    protected $dispatcher;
 
     /**
      * @var ConnectionInterface[]
@@ -31,19 +36,21 @@ class ChatService implements MessageComponentInterface {
      *
      * @param \Doctrine\ORM\EntityManager $em
      */
-    public function __construct($em)
+    public function __construct(EntityManager $em, EventDispatcherInterface $dispatcher)
     {
         $this->em = $em;
 
-        $this->clients = new \SplObjectStorage;
+        $this->dispatcher = $dispatcher;
+
+        $this->clients = new ArrayCollection();
     }
 
     function onOpen(ConnectionInterface $conn) {
-        $this->clients->attach($conn);
+        $this->clients->add($conn);
     }
 
     function onClose(ConnectionInterface $conn) {
-        $this->clients->detach($conn);
+        $this->clients->removeElement($conn);
     }
 
     function onError(ConnectionInterface $conn, \Exception $e) {
@@ -51,12 +58,13 @@ class ChatService implements MessageComponentInterface {
     }
 
     function onMessage(ConnectionInterface $from, $msg) {
+
+        $event = new MessageEvent($msg);
+
+        $msg = $this->dispatcher->dispatch(MessageEvent::getName(), $event)->getMessage();
+
         foreach ($this->clients as $client) {
             $client->send($msg . "\n");
-//            if ($from !== $client) {
-//                // The sender is not the receiver, send to each client connected
-//                $client->send($msg);
-//            }
         }
     }
 

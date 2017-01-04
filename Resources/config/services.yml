@@ -3,3 +3,4 @@ services:
         class: Vadiktok\ChatBundle\Service\ChatService
         arguments:
             - "@doctrine.orm.default_entity_manager"
+            - "@event_dispatcher"

@@ -28,7 +28,7 @@ class SocketServerCommand extends ContainerAwareCommand
     {
         $chat = $this->getContainer()->get('vadiktok_chat.chat');
         $server = IoServer::factory($chat, $chat->getPort());
-        $output->writeln("Socket server is running on port " . $chat->getPort());
+        $output->writeln("Socket server is now running on port " . $chat->getPort());
         $server->run();
     }
 }
