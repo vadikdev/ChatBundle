@@ -1,0 +1,1 @@
+Simple Symfony chat bundle based on Ratchet (http://socketo.me/) WebSocket library
